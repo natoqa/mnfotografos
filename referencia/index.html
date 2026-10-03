@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Miguel & Nancy · Fotografía de bodas</title>
+<meta name="description" content="Miguel & Nancy, fotógrafos de bodas y pre bodas en Perú.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Hanken+Grotesk:wght@300;400;500&family=Nanum+Brush+Script&display=swap" rel="stylesheet">
+<style>
+/* ===== Tokens de marca (Brand Guidelines MN) ===== */
+:root{
+  --hueso:#F2F2E6;   /* Principal · luz, transparencia */
+  --negro:#000000;   /* Principal · atemporalidad, sofisticación */
+  --topo:#7E746A;    /* Secundaria · matiz, confianza */
+  --carbon:#1E1B1B;  /* Secundaria · seguridad, elegancia */
+  --lino:#D6D1C7;    /* derivado del fondo del portafolio impreso */
+
+  --serif:"Bodoni Moda", "Didot", "Bodoni 72", Georgia, serif;
+  --sans:"Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --script:"Nanum Brush Script", "Brush Script MT", cursive;
+
+  --gutter:clamp(20px, 4vw, 56px);
+  --ease:cubic-bezier(.76,0,.24,1);
+  --ease-out:cubic-bezier(.2,.7,.1,1);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+body{font-family:var(--sans);font-weight:300;font-size:16px;line-height:1.6;color:var(--negro);background:var(--hueso);-webkit-font-smoothing:antialiased}
+img{display:block;max-width:100%}
+a{color:inherit;text-decoration:none}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+:focus-visible{outline:1px solid currentColor;outline-offset:4px}
+body.no-scroll{overflow:hidden}
+
+/* Contenedor de foto: si la imagen no carga queda un bloque topo, no un ícono roto */
+.ph{position:relative;overflow:hidden;background:var(--topo)}
+.ph img{width:100%;height:100%;object-fit:cover}
+
+/* ===== NAV ===== */
+.nav{position:fixed;inset:0 0 auto 0;z-index:60;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;
+  padding:calc(18px + env(safe-area-inset-top,0px)) var(--gutter) 18px;color:var(--hueso);
+  transition:background-color .5s, color .5s, transform .6s var(--ease), box-shadow .5s}
+.nav.is-solid{background:var(--hueso);color:var(--negro);box-shadow:0 1px 0 rgba(0,0,0,.08)}
+.nav.is-hidden{transform:translateY(-100%)}
+.nav.is-solid.is-dark{background:var(--negro);color:var(--hueso);box-shadow:none}
+.nav.menu-open{background:transparent;color:var(--hueso);box-shadow:none;transform:none}
+.logo{grid-column:2;font-family:var(--serif);font-size:clamp(20px,2vw,26px);letter-spacing:-.02em;line-height:1;white-space:nowrap}
+.logo em{font-style:italic;padding:0 .04em}
+.burger{grid-column:3;justify-self:end;width:44px;height:44px;display:grid;place-content:center;gap:7px}
+.burger span{display:block;width:30px;height:1px;background:currentColor;transition:transform .5s var(--ease)}
+.burger[aria-expanded="true"] span:nth-child(1){transform:translateY(4px) rotate(45deg)}
+.burger[aria-expanded="true"] span:nth-child(2){transform:translateY(-4px) rotate(-45deg)}
+
+/* ===== MENÚ ===== */
+.menu{position:fixed;inset:0;z-index:50;background:var(--carbon);color:var(--hueso);
+  display:grid;grid-template-columns:1.1fr 1fr;gap:var(--gutter);
+  padding:calc(120px + env(safe-area-inset-top,0px)) var(--gutter) calc(40px + env(safe-area-inset-bottom,0px));
+  clip-path:inset(0 0 100% 0);visibility:hidden;transition:clip-path .9s var(--ease), visibility 0s .9s}
+.menu.is-open{clip-path:inset(0 0 0 0);visibility:visible;transition:clip-path .9s var(--ease), visibility 0s}
+.menu__list{list-style:none;align-self:center}
+.menu__list li{overflow:hidden}
+.menu__list a{display:inline-block;font-family:var(--serif);font-size:clamp(44px,7.2vw,104px);line-height:1.04;letter-spacing:-.03em;
+  transform:translateY(105%);transition:transform .8s var(--ease-out), opacity .4s;transition-delay:0s}
+.menu.is-open .menu__list a{transform:none;transition-delay:calc(.25s + var(--i) * .06s), 0s}
+.menu__list:hover a:not(:hover){opacity:.3}
+.menu__list a:hover{font-style:italic}
+.menu__preview{position:relative;align-self:stretch;max-height:72vh;margin-top:auto;margin-bottom:auto}
+.menu__preview .ph{position:absolute;inset:0;opacity:0;transition:opacity .6s}
+.menu__preview .ph.is-active{opacity:1}
+.menu__foot{grid-column:1/-1;display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px 32px;font-size:14px;color:rgba(242,242,230,.6);align-self:end}
+.menu__foot a:hover{color:var(--hueso)}
+
+/* ===== HERO ===== */
+.hero{position:relative;height:100svh;min-height:560px;overflow:hidden;background:var(--carbon);color:var(--hueso)}
+.hero .ph{position:absolute;inset:0;background:var(--carbon)}
+.hero .ph img{filter:grayscale(1) contrast(1.06);transform:scale(1.08);animation:heroImg 2.6s var(--ease-out) forwards}
+.hero::after{content:"";position:absolute;inset:0;background:rgba(30,27,27,.3)}
+.hero__inner{position:absolute;inset:auto 0 0 0;z-index:2}
+.hero__meta{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;padding:0 var(--gutter) 14px;font-size:14px;
+  opacity:0;animation:fade 1s 1.4s forwards}
+.hero__phrase{font-family:var(--serif);font-style:italic;font-size:clamp(24px,2.6vw,38px);line-height:1.16;letter-spacing:-.01em;max-width:19ch}
+.hero__meta a{border-bottom:1px solid rgba(242,242,230,.5);padding-bottom:2px}
+.hero__word{overflow:hidden;line-height:.78;padding:0 1.2vw}
+.hero__word span{display:block;font-family:var(--serif);font-weight:400;letter-spacing:-.045em;white-space:nowrap;text-align:center;
+  font-size:20vw;transform:translateY(100%);animation:rise 1.4s .5s var(--ease-out) forwards;margin-bottom:-.06em}
+
+/* ===== SECCIONES ===== */
+.section{padding:clamp(96px,13vw,200px) var(--gutter)}
+.grid{display:grid;grid-template-columns:repeat(12,1fr);column-gap:clamp(12px,2vw,28px)}
+.h-display{font-family:var(--serif);font-weight:400;letter-spacing:-.035em;line-height:.95;font-size:clamp(52px,8vw,128px)}
+.small{font-size:14px;line-height:1.5}
+.muted{color:var(--negro)}
+
+/* Nosotros */
+/* Hero fijo: la siguiente sección sube y lo cubre por completo */
+.hero{position:sticky;top:0;z-index:0}
+main > :where(section:not(.hero)){position:relative;z-index:1;background:var(--hueso)}
+
+/* Nosotros: pantalla completa fijada; las frases se relevan con el scroll */
+.about__pin{position:sticky;top:0;height:100vh;height:100svh;display:grid;grid-template-columns:1fr 1fr;overflow:hidden}
+.about__photo{height:100%}
+.about__text{position:relative;display:flex;flex-direction:column;justify-content:center;padding:clamp(96px,14vh,140px) var(--gutter) clamp(48px,8vh,88px) clamp(32px,6vw,112px)}
+.about__phrases{display:grid}
+.about__lead{grid-area:1/1;align-self:center;font-family:var(--serif);font-size:clamp(34px,3.8vw,62px);line-height:1.12;letter-spacing:-.02em;max-width:12em;
+  opacity:0;transform:translateY(32px);filter:blur(8px);
+  transition:opacity 1.4s var(--ease-out), transform 1.6s var(--ease-out), filter 1.4s var(--ease-out)}
+.about__lead.is-in{opacity:1;transform:none;filter:none;transition-delay:.35s}
+.about__lead.is-out{opacity:0;transform:translateY(-28px);filter:blur(8px);transition-duration:1.2s;transition-delay:0s}
+.about__sign{display:block;margin-top:clamp(20px,2vw,32px);font-family:var(--sans);font-size:14px;letter-spacing:0}
+.about__progress{position:absolute;left:clamp(32px,6vw,112px);right:var(--gutter);bottom:clamp(32px,6vh,64px);display:flex;gap:8px}
+.about__progress i{flex:1;height:1px;background:rgba(0,0,0,.15);position:relative;overflow:hidden}
+.about__progress i::after{content:"";position:absolute;inset:0;background:var(--negro);transform:scaleX(0);transform-origin:left;transition:transform .9s var(--ease)}
+.about__progress i.is-on::after{transform:scaleX(1)}
+
+/* Portafolio */
+/* Álbumes: fondo negro + recorrido horizontal fijado */
+.albums{position:relative;background:var(--hueso);color:var(--negro);transition:background-color 1.2s var(--ease-out), color 1.2s var(--ease-out)}
+.albums.is-dark{background:var(--negro);color:var(--hueso)}
+.albums__sticky{position:sticky;top:0;height:100vh;height:100svh;overflow:hidden}
+.albums__track{display:flex;height:100%;will-change:transform}
+.panel{flex:0 0 100vw;height:100%;display:flex;align-items:stretch;gap:clamp(28px,5vw,96px);padding-left:var(--gutter)}
+.panel--intro{flex-direction:column;justify-content:flex-end;gap:24px;padding-bottom:clamp(48px,8vh,96px)}
+.panel--intro .h-display{font-size:clamp(72px,15vw,240px);line-height:.85}
+.panel--intro p{max-width:32ch;font-size:15px;opacity:.75}
+.panel__photo{height:100%;aspect-ratio:2/3;flex:0 0 auto;max-width:56vw;clip-path:inset(100% 0 0 0);transition:clip-path 1.4s var(--ease)}
+.panel__photo img{transform:scale(1.15);transition:transform 2s var(--ease-out)}
+.panel__info{display:flex;flex-direction:column;justify-content:space-between;padding:clamp(96px,14vh,140px) var(--gutter) clamp(40px,8vh,88px) 0;min-width:0}
+.panel__count{font-size:14px;opacity:0;transition:opacity 1s .5s}
+.panel__title{font-family:var(--serif);font-weight:400;font-size:clamp(52px,7.4vw,132px);line-height:.95;letter-spacing:-.035em}
+.panel__title span{display:block;overflow:hidden;padding-bottom:.06em}
+.panel__title span > span{transform:translateY(105%);transition:transform 1.2s var(--ease-out)}
+.panel__title span:nth-child(2) > span{transition-delay:.12s}
+.panel__meta{display:flex;gap:32px;align-items:baseline;font-size:14px;opacity:0;transform:translateY(12px);transition:opacity 1s .6s, transform 1s .6s var(--ease-out)}
+.panel.is-active .panel__photo{clip-path:inset(0 0 0 0)}
+.panel.is-active .panel__photo img{transform:scale(1)}
+.panel.is-active .panel__title span > span{transform:none}
+.panel.is-active .panel__count,.panel.is-active .panel__meta{opacity:1;transform:none}
+.albums__progress{position:absolute;left:var(--gutter);right:var(--gutter);bottom:calc(20px + env(safe-area-inset-bottom,0px));height:1px;background:rgba(242,242,230,.18)}
+.albums__progress i{display:block;height:100%;background:var(--hueso);transform-origin:left;transform:scaleX(0)}
+
+/* Proceso */
+.process{background:var(--hueso);padding-top:clamp(120px,15vw,220px)}
+.process__intro{grid-column:1/6}
+.process__intro p{margin-top:24px;max-width:36ch}
+.steps{grid-column:7/13;list-style:none;counter-reset:s}
+.steps li{display:grid;grid-template-columns:64px 1fr;gap:16px;padding:28px 0;border-top:1px solid rgba(0,0,0,.15)}
+.steps li::before{counter-increment:s;content:counter(s);font-family:var(--serif);font-size:40px;line-height:.9;color:var(--negro)}
+.steps h3{font-family:var(--serif);font-weight:400;font-size:24px;letter-spacing:-.01em;margin-bottom:6px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:16px 28px;font-size:14px;letter-spacing:.02em;border:1px solid currentColor;border-radius:999px;transition:background-color .35s,color .35s}
+.btn:hover{background:var(--negro);color:var(--hueso);border-color:var(--negro)}
+.process .btn{margin-top:36px}
+
+.box{background:var(--lino);padding:clamp(80px,10vw,150px) var(--gutter);display:grid;justify-items:center;text-align:center}
+.box__mark{font-family:var(--serif);line-height:.82;letter-spacing:-.03em;display:inline-grid}
+.box__mark .b{font-size:clamp(48px,6vw,88px);justify-self:end;margin-right:.08em}
+.box__mark .e{font-size:clamp(56px,7.4vw,108px);font-style:italic}
+.box__tag{margin-top:18px;font-size:13px}
+.box p{max-width:46ch;margin-top:28px}
+.box .btn{margin-top:32px}
+
+/* Testimonio */
+.quote{background:var(--topo);color:var(--hueso)}
+.quote blockquote{grid-column:2/12;font-family:var(--serif);font-size:clamp(28px,3.8vw,58px);line-height:1.18;letter-spacing:-.02em;text-indent:-.4em}
+.quote cite{grid-column:2/12;margin-top:40px;font-style:normal;font-size:14px;color:rgba(242,242,230,.75)}
+
+/* Contacto */
+.contact{background:var(--carbon);color:var(--hueso);align-items:center}
+.card{grid-column:1/6;background:var(--hueso);padding:14px 14px 0;transform:rotate(-2deg);max-width:440px;justify-self:center;box-shadow:0 30px 60px rgba(0,0,0,.35)}
+.card .ph{aspect-ratio:4/5}
+.card .ph::after{content:"";position:absolute;inset:0;background:rgba(30,27,27,.35)}
+.card__script{position:absolute;inset:0;z-index:2;display:grid;place-content:center;text-align:center;font-family:var(--script);font-size:clamp(46px,5vw,68px);line-height:.95;color:var(--hueso);transform:rotate(-4deg);padding:0 8%}
+.card__foot{display:block;text-align:center;font-family:var(--serif);font-size:15px;color:var(--negro);padding:16px 0 18px}
+.contact__form{grid-column:7/13;max-width:520px}
+.contact__form .h-display{font-size:clamp(48px,6.4vw,96px)}
+.contact__form > p{margin:24px 0 40px;max-width:40ch;color:rgba(242,242,230,.72)}
+.field{display:block;margin-bottom:22px}
+.field span{display:block;font-size:13px;color:rgba(242,242,230,.6);margin-bottom:6px}
+.field input{width:100%;background:transparent;border:0;border-bottom:1px solid rgba(242,242,230,.3);color:var(--hueso);font:inherit;font-size:18px;padding:8px 0;border-radius:0;transition:border-color .3s}
+.field input:focus{outline:none;border-color:var(--hueso)}
+.fields-2{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.contact .btn{background:var(--hueso);color:var(--negro);border-color:var(--hueso);margin-top:12px}
+.contact .btn:hover{background:transparent;color:var(--hueso)}
+.contact__alt{margin-top:28px;font-size:14px;color:rgba(242,242,230,.6)}
+.contact__alt a{color:var(--hueso)}
+
+.redes__head{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:clamp(40px,6vw,80px)}
+.redes__head p{max-width:30ch;text-align:right}
+.redes__list{list-style:none}
+.redes__list a{display:flex;justify-content:space-between;align-items:baseline;gap:20px;padding:22px 0;border-top:1px solid rgba(0,0,0,.18)}
+.redes__list li:last-child a{border-bottom:1px solid rgba(0,0,0,.18)}
+.redes__list b{font-family:var(--serif);font-weight:400;font-size:clamp(40px,6vw,88px);line-height:1;letter-spacing:-.03em}
+.redes__list a:hover b{font-style:italic}
+@media (max-width:900px){.redes__head{flex-direction:column;align-items:flex-start}.redes__head p{text-align:left}}
+.faq{align-items:start}
+.faq__head{grid-column:1/5;position:sticky;top:120px}
+.faq__head .h-display{font-size:clamp(48px,5.6vw,88px)}
+.faq__head p{margin-top:24px;font-size:15px}
+.faq__list{grid-column:6/13;border-bottom:1px solid rgba(0,0,0,.18)}
+.faq__item{border-top:1px solid rgba(0,0,0,.18)}
+.faq__q{width:100%;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:28px 0;text-align:left;
+  font-family:var(--serif);font-weight:400;font-size:clamp(22px,2vw,30px);line-height:1.2;letter-spacing:-.01em}
+.faq__q i{position:relative;flex:0 0 18px;height:18px}
+.faq__q i::before,.faq__q i::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:currentColor;transition:transform .6s var(--ease)}
+.faq__q i::after{transform:rotate(90deg)}
+.faq__q[aria-expanded="true"] i::after{transform:rotate(0)}
+.faq__a{display:grid;grid-template-rows:0fr;transition:grid-template-rows .7s var(--ease)}
+.faq__a > div{overflow:hidden}
+.faq__a p{max-width:52ch;padding:0 40px 32px 0;opacity:0;transform:translateY(-6px);transition:opacity .5s, transform .6s var(--ease-out)}
+.faq__item.is-open .faq__a{grid-template-rows:1fr}
+.faq__item.is-open .faq__a p{opacity:1;transform:none;transition-delay:.15s}
+@media (max-width:900px){.faq__head,.faq__list{grid-column:1/-1}.faq__head{position:static;margin-bottom:48px}}
+/* MN Studio + MN Workshop: dos mitades que se abren al pasar el cursor */
+.branches{display:flex;height:100vh;height:100svh;min-height:560px;background:var(--negro);color:var(--hueso)}
+.branch{position:relative;flex:1 1 0;overflow:hidden;display:flex;align-items:flex-end;transition:flex-grow 1s var(--ease)}
+.branch + .branch{border-left:1px solid rgba(242,242,230,.2)}
+.branch__bg{position:absolute;inset:0}
+.branch__bg img{transform:scale(1.04);transition:transform 1.6s var(--ease-out)}
+.branch__bg::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.45);transition:background-color 1s}
+.branch__body{position:relative;z-index:1;padding:var(--gutter);padding-bottom:clamp(40px,8vh,80px);width:100%}
+.branch__name{font-family:var(--serif);font-weight:400;font-size:clamp(56px,7.5vw,128px);line-height:.9;letter-spacing:-.04em}
+.branch__name span{display:block;font-family:var(--sans);font-size:14px;letter-spacing:0;line-height:1;margin-bottom:14px}
+.branch__text{max-width:34ch;margin-top:20px;font-size:15px}
+.branch__cta{display:inline-block;margin-top:28px;font-size:14px}
+@media (hover:hover) and (min-width:901px){
+  .branches:hover .branch{flex-grow:.75}
+  .branches .branch:hover{flex-grow:1.35}
+  .branch:hover .branch__bg img{transform:scale(1)}
+  .branch:hover .branch__bg::after{background:rgba(0,0,0,.3)}
+}
+@media (max-width:900px){
+  .branches{flex-direction:column;height:auto}
+  .branch{min-height:78svh}
+  .branch + .branch{border-left:0;border-top:1px solid rgba(242,242,230,.2)}
+}
+.footer{background:var(--negro);color:rgba(242,242,230,.6);padding:36px var(--gutter) calc(36px + env(safe-area-inset-bottom,0px));display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px;font-size:13px}
+.footer .logo{color:var(--hueso);font-size:22px}
+
+/* ===== Animaciones (solo la entrada del hero y el menú) ===== */
+@keyframes heroImg{to{transform:scale(1)}}
+@keyframes rise{to{transform:none}}
+@keyframes fade{to{opacity:1}}
+
+/* ===== Responsive ===== */
+@media (max-width:900px){
+  .menu{grid-template-columns:1fr}
+  .menu__preview{display:none}
+  .process__intro,.steps,.card,.contact__form,.quote blockquote,.quote cite{grid-column:1/-1}
+  .about__pin{grid-template-columns:1fr;grid-template-rows:52% 48%}
+  .about__text{padding:32px var(--gutter) 64px}
+  .about__lead{font-size:clamp(28px,7.4vw,40px)}
+  .about__progress{left:var(--gutter);bottom:32px}
+  .steps{margin-top:48px}
+  .card{margin-bottom:72px;max-width:340px}
+}
+@media (max-width:760px){
+  .panel{flex-direction:column;gap:20px;padding:calc(76px + env(safe-area-inset-top,0px)) var(--gutter) 56px}
+  .panel__photo{height:auto;flex:1 1 auto;min-height:0;width:100%;max-width:none;aspect-ratio:auto}
+  .panel__info{padding:0;flex:0 0 auto;gap:10px}
+  .panel__title{font-size:clamp(40px,11vw,60px)}
+  .panel__count{order:-1}
+}
+@media (max-width:560px){
+  .hero__meta{flex-direction:column;align-items:flex-start}
+  .fields-2{grid-template-columns:1fr;gap:0}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;transition-duration:.01ms!important;transition-delay:0s!important}
+  html{scroll-behavior:auto}
+  .panel__photo{clip-path:none!important}.panel__title span > span,.panel__meta{transform:none!important}.panel__count,.panel__meta{opacity:1!important}
+  .about__lead{transform:none!important;filter:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- ===== NAV: logo centrado + hamburguesa en todas las pantallas ===== -->
+<header class="nav" id="nav">
+  <!-- Reemplaza el texto por el SVG del logo cuando lo tengas -->
+  <a href="#inicio" class="logo" aria-label="Miguel y Nancy, inicio">Miguel<em>&amp;</em>Nancy</a>
+  <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">
+    <span></span><span></span>
+  </button>
+</header>
+
+<nav class="menu" id="menu" aria-label="Menú principal">
+  <ul class="menu__list">
+    <li><a href="#albumes" data-preview="0" style="--i:0">Álbumes</a></li>
+    <li><a href="#nosotros" data-preview="1" style="--i:1">Nosotros</a></li>
+    <li><a href="#testimonios" data-preview="2" style="--i:2">Testimonios</a></li>
+    <li><a href="#contacto" data-preview="3" style="--i:3">Contacto</a></li>
+    <li><a href="#redes" data-preview="4" style="--i:4">Redes</a></li>
+  </ul>
+  <div class="menu__preview" aria-hidden="true">
+    <div class="ph is-active"><img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=1200&q=80&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
+    <div class="ph"><img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=1200&q=80&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
+    <div class="ph"><img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?w=1200&q=80&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
+    <div class="ph"><img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?w=1200&q=80&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
+    <div class="ph"><img src="https://images.unsplash.com/photo-1522673607200-164d1b6ce486?w=1200&q=80&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
+  </div>
+  <div class="menu__foot">
+    <a href="https://instagram.com/mnfotografos" target="_blank" rel="noopener">Instagram @mnfotografos</a>
+    <a href="https://wa.me/51900000000" target="_blank" rel="noopener">WhatsApp</a>
+    <span>Portafolio 2026</span>
+  </div>
+</nav>
+
+<main>
+  <!-- ===== HERO: foto a pantalla completa ===== -->
+  <section class="hero" id="inicio">
+    <div class="ph"><img src="https://images.unsplash.com/photo-1519741497674-611481863552?w=2400&q=80&auto=format&fit=crop" alt="Pareja de novios abrazados el día de su boda" fetchpriority="high" onerror="this.remove()"></div>
+    <div class="hero__inner">
+      <div class="hero__meta">
+        <p class="hero__phrase">Hay instantes que pasan una sola vez. Nosotros nos quedamos para guardarlos.</p>
+        <a href="#albumes">Ver álbumes</a>
+      </div>
+      <div class="hero__word" aria-hidden="true"><span class="fit">historias</span></div>
+    </div>
+  </section>
+
+  <!-- ===== NOSOTROS ===== -->
+  <section class="about" id="nosotros" aria-label="Nosotros">
+    <div class="about__pin">
+      <div class="ph about__photo"><img src="https://images.unsplash.com/photo-1537633552985-df8429e8048b?w=1600&q=80&auto=format&fit=crop" alt="Miguel y Nancy" loading="lazy" onerror="this.remove()"></div>
+      <div class="about__text">
+        <div class="about__phrases">
+          <p class="about__lead">Una boda pasa rápido y se recuerda despacio.</p>
+          <p class="about__lead">Por eso miramos lo que nadie está mirando.</p>
+          <p class="about__lead">Una mano que tiembla, una risa a destiempo, un abrazo que dura un poco más.</p>
+          <p class="about__lead">Eso es lo que te vas a llevar.<span class="about__sign">Miguel y Nancy, fotógrafos</span></p>
+        </div>
+        <div class="about__progress" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PORTAFOLIO ===== -->
+  <section class="albums" id="albumes" aria-label="Álbumes">
+    <div class="albums__sticky">
+      <div class="albums__track" id="albumsTrack">
+        <div class="panel panel--intro">
+          <h2 class="h-display">Álbumes</h2>
+          <p>Tres historias recientes. Sigue bajando para recorrerlas.</p>
+        </div>
+        <article class="panel" aria-label="Boda en Cartagena">
+          <div class="ph panel__photo"><img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?w=1200&h=1800&q=80&auto=format&fit=crop" alt="Boda en Cartagena" loading="lazy" onerror="this.remove()"></div>
+          <div class="panel__info">
+            <p class="panel__count">1 de 3</p>
+            <div>
+              <h3 class="panel__title"><span><span>Boda en</span></span><span><span>Cartagena</span></span></h3>
+              <div class="panel__meta"><span>Colombia</span><a class="link" href="#contacto">Ver álbum</a></div>
+            </div>
+          </div>
+        </article>
+        <article class="panel" aria-label="Boda en Cuzco">
+          <div class="ph panel__photo"><img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?w=1200&h=1800&q=80&auto=format&fit=crop" alt="Boda en Cuzco" loading="lazy" onerror="this.remove()"></div>
+          <div class="panel__info">
+            <p class="panel__count">2 de 3</p>
+            <div>
+              <h3 class="panel__title"><span><span>Boda en</span></span><span><span>Cuzco</span></span></h3>
+              <div class="panel__meta"><span>Perú</span><a class="link" href="#contacto">Ver álbum</a></div>
+            </div>
+          </div>
+        </article>
+        <article class="panel" aria-label="Post boda en Cuzco">
+          <div class="ph panel__photo"><img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=1200&h=1800&q=80&auto=format&fit=crop" alt="Post boda en Cuzco" loading="lazy" onerror="this.remove()"></div>
+          <div class="panel__info">
+            <p class="panel__count">3 de 3</p>
+            <div>
+              <h3 class="panel__title"><span><span>Post boda</span></span><span><span>en Cuzco</span></span></h3>
+              <div class="panel__meta"><span>Perú</span><a class="link" href="#contacto">Ver álbum</a></div>
+            </div>
+          </div>
+        </article>
+      </div>
+      <div class="albums__progress" aria-hidden="true"><i id="albumsBar"></i></div>
+    </div>
+  </section>
+
+  <!-- ===== PROCESO (es una secuencia real, por eso va numerado) ===== -->
+  <section class="section grid process" id="proceso">
+    <div class="process__intro">
+      <h2 class="h-display">Cómo trabajamos</h2>
+      <p>Cada cobertura empieza con una conversación. Los paquetes y precios completos están en nuestro portafolio 2026.</p>
+      <a class="btn" href="#contacto">Pedir el portafolio 2026</a>
+    </div>
+    <ol class="steps">
+      <li><div><h3>Conversamos</h3><p>Nos cuentan cómo imaginan el día: lugar, horarios y las personas que no pueden faltar en las fotos.</p></div></li>
+      <li><div><h3>Reservamos la fecha</h3><p>Elegimos el paquete juntos y separamos la fecha con un adelanto.</p></div></li>
+      <li><div><h3>Pre boda</h3><p>Una sesión previa para conocernos frente a la cámara y llegar en confianza al gran día.</p></div></li>
+      <li><div><h3>El día de la boda</h3><p>Cubrimos desde los preparativos hasta la fiesta, los dos fotógrafos a la vez.</p></div></li>
+      <li><div><h3>Entrega</h3><p>Galería privada en línea y las piezas impresas que hayan elegido.</p></div></li>
+    </ol>
+  </section>
+
+  <section class="box" aria-labelledby="box-title">
+    <h2 id="box-title" class="box__mark"><span class="b">box</span><span class="e">experience</span></h2>
+    <p class="box__tag muted">Nuevo servicio</p>
+    <p>Una caja de recuerdo con sus fotografías impresas y detalles de su boda, preparada a mano para abrirla el día que quieran volver a ese momento.</p>
+    <a class="btn" href="#contacto">Consultar por box experience</a>
+  </section>
+
+  <!-- ===== MN STUDIO + MN WORKSHOP ===== -->
+  <section class="branches" id="studio-workshop" aria-label="MN Studio y MN Workshop">
+    <article class="branch" id="studio">
+      <div class="ph branch__bg"><img src="https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=1600&q=80&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
+      <div class="branch__body">
+        <h2 class="branch__name"><span>MN</span>Studio</h2>
+        <p class="branch__text">Sesiones en estudio: retratos, familia, maternidad y marca personal, con la misma mirada que llevamos a cada boda.</p>
+        <a class="branch__cta link" href="#" data-wa="Hola Miguel y Nancy, quiero información sobre una sesión en MN Studio.">Reservar una sesión</a>
+      </div>
+    </article>
+    <article class="branch" id="workshop">
+      <div class="ph branch__bg"><img src="https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=1600&q=80&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()"></div>
+      <div class="branch__body">
+        <h2 class="branch__name"><span>MN</span>Workshop</h2>
+        <p class="branch__text">Talleres para fotógrafos que quieren aprender a contar historias: dirección de parejas, luz natural y edición.</p>
+        <a class="branch__cta link" href="#" data-wa="Hola Miguel y Nancy, quiero información sobre el próximo MN Workshop.">Ver próximos talleres</a>
+      </div>
+    </article>
+  </section>
+
+  <!-- ===== TESTIMONIO ===== -->
+  <section class="section grid quote" id="testimonios" aria-label="Testimonios">
+    <blockquote>“No nos dimos cuenta de que estaban ahí, y aun así tienen las fotos de todo lo que pasó. Volvimos a vivir la boda cuando abrimos la galería.”</blockquote>
+    <cite>Andrea y Luis, boda en Huanchaco</cite>
+  </section>
+
+  <!-- ===== PREGUNTAS FRECUENTES ===== -->
+  <section class="section grid faq" id="preguntas">
+    <div class="faq__head">
+      <h2 class="h-display">Preguntas frecuentes</h2>
+      <p>¿No encuentras tu duda? <a class="link" href="#contacto">Escríbenos</a></p>
+    </div>
+    <div class="faq__list">
+      <div class="faq__item">
+        <h3><button class="faq__q" aria-expanded="false" aria-controls="faq-1" id="faq-q-1">¿Con cuánta anticipación debemos reservar?<i aria-hidden="true"></i></button></h3>
+        <div class="faq__a" id="faq-1" role="region" aria-labelledby="faq-q-1"><div><p>Lo ideal es entre seis meses y un año antes, sobre todo si la boda es en temporada alta. Igual escríbenos aunque falte poco: si la fecha está libre, la tomamos.</p></div></div>
+      </div>
+      <div class="faq__item">
+        <h3><button class="faq__q" aria-expanded="false" aria-controls="faq-2" id="faq-q-2">¿Cómo separamos la fecha?<i aria-hidden="true"></i></button></h3>
+        <div class="faq__a" id="faq-2" role="region" aria-labelledby="faq-q-2"><div><p>Con un adelanto y la firma de un contrato sencillo. Desde ese momento la fecha queda reservada solo para ustedes.</p></div></div>
+      </div>
+      <div class="faq__item">
+        <h3><button class="faq__q" aria-expanded="false" aria-controls="faq-3" id="faq-q-3">¿Viajan a otras ciudades o fuera del país?<i aria-hidden="true"></i></button></h3>
+        <div class="faq__a" id="faq-3" role="region" aria-labelledby="faq-q-3"><div><p>Sí. Hemos fotografiado bodas en distintas ciudades del Perú y en el extranjero. Los pasajes y la estadía se coordinan aparte según el destino.</p></div></div>
+      </div>
+      <div class="faq__item">
+        <h3><button class="faq__q" aria-expanded="false" aria-controls="faq-4" id="faq-q-4">¿Qué incluye la sesión de pre boda?<i aria-hidden="true"></i></button></h3>
+        <div class="faq__a" id="faq-4" role="region" aria-labelledby="faq-q-4"><div><p>Una sesión en el lugar que elijan, pensada para que se acostumbren a la cámara antes del gran día. Muchas parejas usan estas fotos para el save the date.</p></div></div>
+      </div>
+      <div class="faq__item">
+        <h3><button class="faq__q" aria-expanded="false" aria-controls="faq-5" id="faq-q-5">¿Cuándo recibimos las fotos?<i aria-hidden="true"></i></button></h3>
+        <div class="faq__a" id="faq-5" role="region" aria-labelledby="faq-q-5"><div><p>Entregamos un adelanto pocos días después de la boda y la galería completa editada en las semanas siguientes, en una galería privada en línea.</p></div></div>
+      </div>
+      <div class="faq__item">
+        <h3><button class="faq__q" aria-expanded="false" aria-controls="faq-6" id="faq-q-6">¿Podemos tener fotos impresas o un álbum?<i aria-hidden="true"></i></button></h3>
+        <div class="faq__a" id="faq-6" role="region" aria-labelledby="faq-q-6"><div><p>Sí. Trabajamos cuadros, story books de biocuero y la box experience, una caja de recuerdo con sus fotos impresas.</p></div></div>
+      </div>
+      <div class="faq__item">
+        <h3><button class="faq__q" aria-expanded="false" aria-controls="faq-7" id="faq-q-7">¿Dónde vemos los paquetes y precios?<i aria-hidden="true"></i></button></h3>
+        <div class="faq__a" id="faq-7" role="region" aria-labelledby="faq-q-7"><div><p>Están en nuestro portafolio 2026. Escríbenos por WhatsApp con la fecha y el lugar de su boda y se lo enviamos.</p></div></div>
+      </div>
+    </div>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "¿Con cuánta anticipación debemos reservar?", "acceptedAnswer": {"@type": "Answer", "text": "Lo ideal es entre seis meses y un año antes, sobre todo si la boda es en temporada alta. Igual escríbenos aunque falte poco: si la fecha está libre, la tomamos."}}, {"@type": "Question", "name": "¿Cómo separamos la fecha?", "acceptedAnswer": {"@type": "Answer", "text": "Con un adelanto y la firma de un contrato sencillo. Desde ese momento la fecha queda reservada solo para ustedes."}}, {"@type": "Question", "name": "¿Viajan a otras ciudades o fuera del país?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. Hemos fotografiado bodas en distintas ciudades del Perú y en el extranjero. Los pasajes y la estadía se coordinan aparte según el destino."}}, {"@type": "Question", "name": "¿Qué incluye la sesión de pre boda?", "acceptedAnswer": {"@type": "Answer", "text": "Una sesión en el lugar que elijan, pensada para que se acostumbren a la cámara antes del gran día. Muchas parejas usan estas fotos para el save the date."}}, {"@type": "Question", "name": "¿Cuándo recibimos las fotos?", "acceptedAnswer": {"@type": "Answer", "text": "Entregamos un adelanto pocos días después de la boda y la galería completa editada en las semanas siguientes, en una galería privada en línea."}}, {"@type": "Question", "name": "¿Podemos tener fotos impresas o un álbum?", "acceptedAnswer": {"@type": "Answer", "text": "Sí. Trabajamos cuadros, story books de biocuero y la box experience, una caja de recuerdo con sus fotos impresas."}}, {"@type": "Question", "name": "¿Dónde vemos los paquetes y precios?", "acceptedAnswer": {"@type": "Answer", "text": "Están en nuestro portafolio 2026. Escríbenos por WhatsApp con la fecha y el lugar de su boda y se lo enviamos."}}]}</script>
+  </section>
+
+  <!-- ===== CONTACTO ===== -->
+  <section class="section grid contact" id="contacto">
+    <figure class="card">
+      <div class="ph">
+        <img src="https://images.unsplash.com/photo-1591604466107-ec97de577aff?w=900&q=80&auto=format&fit=crop" alt="" loading="lazy" onerror="this.remove()">
+        <p class="card__script">gracias por permitirnos contar tu historia</p>
+      </div>
+      <figcaption class="card__foot">Miguel &amp; Nancy</figcaption>
+    </figure>
+
+    <form class="contact__form" id="waForm" novalidate>
+      <h2 class="h-display">Reserva tu fecha</h2>
+      <p>Cuéntanos cuándo y dónde es tu boda. Te respondemos por WhatsApp con la disponibilidad y el portafolio 2026.</p>
+      <label class="field"><span>Nombres de la pareja</span><input name="nombres" autocomplete="name" required></label>
+      <div class="fields-2">
+        <label class="field"><span>Fecha de la boda</span><input name="fecha" type="date"></label>
+        <label class="field"><span>Ciudad o lugar</span><input name="lugar"></label>
+      </div>
+      <button class="btn" type="submit">Enviar por WhatsApp</button>
+      <p class="contact__alt">También en Instagram: <a class="link" href="https://instagram.com/mnfotografos" target="_blank" rel="noopener">@mnfotografos</a></p>
+    </form>
+  </section>
+  <!-- ===== REDES ===== -->
+  <section class="section" id="redes">
+    <div class="redes__head">
+      <h2 class="h-display">Redes</h2>
+      <p class="small">Publicamos bodas completas, pre bodas y lo que pasa detrás de cámara.</p>
+    </div>
+    <ul class="redes__list">
+      <!-- Reemplazar los enlaces de Facebook y TikTok por los reales -->
+      <li><a href="https://instagram.com/mnfotografos" target="_blank" rel="noopener"><b>Instagram</b><span class="small">@mnfotografos</span></a></li>
+      <li><a href="https://facebook.com/mnfotografos" target="_blank" rel="noopener"><b>Facebook</b><span class="small">Miguel &amp; Nancy Fotógrafos</span></a></li>
+      <li><a href="https://tiktok.com/@mnfotografos" target="_blank" rel="noopener"><b>TikTok</b><span class="small">@mnfotografos</span></a></li>
+      <li><a href="https://wa.me/51900000000" target="_blank" rel="noopener"><b>WhatsApp</b><span class="small">Escríbenos</span></a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="footer">
+  <span class="logo">Miguel<em>&amp;</em>Nancy</span>
+  <span>© <span id="year">2026</span> Miguel &amp; Nancy Fotógrafos</span>
+  <a href="https://instagram.com/mnfotografos" target="_blank" rel="noopener">@mnfotografos</a>
+</footer>
+
+<script>
+(() => {
+  const WHATSAPP = '51900000000'; // ← reemplazar por el número real (código de país + número)
+
+  const nav = document.getElementById('nav');
+  const burger = document.getElementById('burger');
+  const menu = document.getElementById('menu');
+  const hero = document.getElementById('inicio');
+
+  /* Nav: transparente sobre el hero, sólido después; se oculta al bajar y aparece al subir */
+  let lastY = scrollY;
+  const onScroll = () => {
+    const y = scrollY;
+    const pastHero = y > hero.offsetHeight - 80;
+    nav.classList.toggle('is-solid', pastHero);
+    nav.classList.toggle('is-hidden', pastHero && y > lastY && y - lastY > 4);
+    lastY = y;
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* Menú */
+  const setMenu = open => {
+    menu.classList.toggle('is-open', open);
+    nav.classList.toggle('menu-open', open);
+    burger.setAttribute('aria-expanded', open);
+    burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+    document.body.classList.toggle('no-scroll', open);
+    if (open) setTimeout(() => menu.querySelector('a').focus({ preventScroll: true }), 400);
+  };
+  burger.addEventListener('click', () => setMenu(!menu.classList.contains('is-open')));
+  menu.querySelectorAll('.menu__list a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+  addEventListener('keydown', e => { if (e.key === 'Escape' && menu.classList.contains('is-open')) { setMenu(false); burger.focus(); } });
+
+  /* Vista previa de foto al pasar por cada enlace del menú */
+  const previews = menu.querySelectorAll('.menu__preview .ph');
+  menu.querySelectorAll('[data-preview]').forEach(a => {
+    const show = () => previews.forEach((p, i) => p.classList.toggle('is-active', i === +a.dataset.preview));
+    a.addEventListener('mouseenter', show);
+    a.addEventListener('focus', show);
+  });
+
+  /* Álbumes: fondo negro al entrar + scroll vertical que mueve la galería en horizontal */
+  const albums = document.getElementById('albumes');
+  const track = document.getElementById('albumsTrack');
+  const bar = document.getElementById('albumsBar');
+  const panels = [...track.children];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  let target = 0, current = 0;
+
+  const sizeAlbums = () => { albums.style.height = (panels.length * innerHeight) + 'px'; };
+  const readAlbums = () => {
+    const r = albums.getBoundingClientRect();
+    const dark = r.top < innerHeight * 0.5 && r.bottom > innerHeight * 0.5;
+    albums.classList.toggle('is-dark', dark);
+    nav.classList.toggle('is-dark', dark);
+    const max = albums.offsetHeight - innerHeight;
+    target = Math.min(1, Math.max(0, -r.top / max));
+  };
+  const loop = () => {
+    current += reduce.matches ? (target - current) : (target - current) * 0.09;
+    const dist = track.scrollWidth - innerWidth;
+    track.style.transform = `translate3d(${-current * dist}px,0,0)`;
+    bar.style.transform = `scaleX(${current})`;
+    const idx = Math.round(current * (panels.length - 1));
+    panels.forEach((p, i) => { if (i === idx && i > 0) p.classList.add('is-active'); });
+    requestAnimationFrame(loop);
+  };
+  sizeAlbums(); readAlbums();
+  addEventListener('scroll', readAlbums, { passive: true });
+  addEventListener('resize', () => { sizeAlbums(); readAlbums(); });
+  requestAnimationFrame(loop);
+
+  /* Nosotros: las frases se relevan con el scroll a lo largo de la foto */
+  const about = document.getElementById('nosotros');
+  const leads = [...about.querySelectorAll('.about__lead')];
+  const ticks = [...about.querySelectorAll('.about__progress i')];
+  const sizeAbout = () => { about.style.height = (leads.length * innerHeight * 0.9 + innerHeight * 0.4) + 'px'; };
+  const updateLeads = () => {
+    const r = about.getBoundingClientRect();
+    let active = -1;
+    if (r.top < innerHeight * 0.35) {
+      const p = Math.min(1, Math.max(0, -r.top / (about.offsetHeight - innerHeight)));
+      active = Math.min(leads.length - 1, Math.floor(p * leads.length));
+    }
+    leads.forEach((el, i) => {
+      el.classList.toggle('is-in', i === active);
+      el.classList.toggle('is-out', active !== -1 && i !== active);
+    });
+    ticks.forEach((t, i) => t.classList.toggle('is-on', i <= active));
+  };
+  sizeAbout();
+  addEventListener('scroll', updateLeads, { passive: true });
+  addEventListener('resize', () => { sizeAbout(); updateLeads(); });
+  updateLeads();
+
+  /* Preguntas frecuentes: una abierta a la vez */
+  const faqItems = document.querySelectorAll('.faq__item');
+  faqItems.forEach(item => {
+    const btn = item.querySelector('.faq__q');
+    btn.addEventListener('click', () => {
+      const open = !item.classList.contains('is-open');
+      faqItems.forEach(o => { o.classList.remove('is-open'); o.querySelector('.faq__q').setAttribute('aria-expanded', 'false'); });
+      item.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', open);
+    });
+  });
+
+  /* Enlaces de WhatsApp con mensaje prellenado */
+  document.querySelectorAll('[data-wa]').forEach(a => {
+    a.href = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(a.dataset.wa)}`;
+    a.target = '_blank'; a.rel = 'noopener';
+  });
+
+  /* Palabras gigantes: se ajustan al ancho exacto de la pantalla */
+  const fit = () => document.querySelectorAll('.fit').forEach(el => {
+    el.style.fontSize = '100px';
+    const target = el.parentElement.clientWidth * 0.98;
+    el.style.fontSize = (100 * target / el.scrollWidth) + 'px';
+  });
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(fit);
+  addEventListener('resize', fit);
+
+  /* Formulario → mensaje prellenado de WhatsApp */
+  document.getElementById('waForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const f = new FormData(e.target);
+    const nombres = (f.get('nombres') || '').trim();
+    const input = e.target.nombres;
+    if (!nombres) { input.focus(); input.placeholder = 'Escribe sus nombres para continuar'; return; }
+    let fecha = f.get('fecha');
+    if (fecha) fecha = new Date(fecha + 'T12:00').toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
+    const msg = `Hola Miguel y Nancy, somos ${nombres}.` +
+      (fecha ? ` Nuestra boda es el ${fecha}` : ' Estamos planeando nuestra boda') +
+      (f.get('lugar') ? ` en ${f.get('lugar').trim()}.` : '.') +
+      ' Nos gustaría conocer su disponibilidad y el portafolio 2026.';
+    window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+  });
+
+  document.getElementById('year').textContent = new Date().getFullYear();
+})();
+</script>
+</body>
+</html>

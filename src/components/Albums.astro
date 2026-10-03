@@ -1,0 +1,79 @@
+---
+import { albums } from '../data/site';
+---
+
+<!-- ===== PORTAFOLIO ===== -->
+<section class="albums" id="albumes" aria-label="Álbumes" data-nav-keep style={`--n:${albums.length + 1}`}>
+  <div class="albums__sticky">
+    <div class="albums__track" id="albumsTrack">
+      <div class="panel panel--intro">
+        <h2 class="h-display">Álbumes</h2>
+        <p>Tres historias recientes. Sigue bajando para recorrerlas.</p>
+      </div>
+      {albums.map((album, i) => (
+        <article class="panel" aria-label={album.label}>
+          <div class="ph panel__photo"><img src={album.image} alt={album.label} loading="lazy" onerror="this.remove()" /></div>
+          <div class="panel__info">
+            <p class="panel__count">{i + 1} de {albums.length}</p>
+            <div>
+              <h3 class="panel__title">{album.title.map(line => <span><span>{line}</span></span>)}</h3>
+              <div class="panel__meta"><span>{album.place}</span><a class="link" href={`/albumes/${album.slug}`}>Ver álbum</a></div>
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+    <div class="albums__progress" aria-hidden="true"><i id="albumsBar"></i></div>
+  </div>
+</section>
+
+<script>
+  /* Álbumes: fondo negro al entrar + scroll vertical que mueve la galería en horizontal */
+  const nav = document.getElementById('nav')!;
+  const albums = document.getElementById('albumes')!;
+  const track = document.getElementById('albumsTrack')!;
+  const bar = document.getElementById('albumsBar')!;
+  const panels = [...track.children];
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+  // Pausa al final: el último álbum queda quieto este tramo (en altos de pantalla) antes de soltar la sección,
+  // para que el recorrido suavizado alcance a terminar. Debe coincidir con el "+ 60vh" de .albums en global.css
+  const HOLD = 0.6;
+  let target = 0, current = 0;
+  let visible = false, running = false;
+
+  const readAlbums = () => {
+    const r = albums.getBoundingClientRect();
+    const dark = r.top < innerHeight * 0.5 && r.bottom > innerHeight * 0.5;
+    albums.classList.toggle('is-dark', dark);
+    nav.classList.toggle('is-dark', dark);
+    const max = albums.offsetHeight - innerHeight - innerHeight * HOLD;
+    target = Math.min(1, Math.max(0, -r.top / max));
+    if (target !== current) start();
+  };
+  const loop = () => {
+    // Fuera de pantalla y casi en reposo: se fija en su posición final y se detiene para no gastar batería
+    const settle = !visible && Math.abs(target - current) < 0.0005;
+    current = settle ? target : current + (reduce.matches ? (target - current) : (target - current) * 0.09);
+    const dist = track.scrollWidth - innerWidth;
+    track.style.transform = `translate3d(${-current * dist}px,0,0)`;
+    bar.style.transform = `scaleX(${current})`;
+    const idx = Math.round(current * (panels.length - 1));
+    panels.forEach((p, i) => { if (i === idx && i > 0) p.classList.add('is-active'); });
+    if (settle) { running = false; return; }
+    requestAnimationFrame(loop);
+  };
+  const start = () => { if (!running) { running = true; requestAnimationFrame(loop); } };
+
+  new IntersectionObserver(([entry]) => {
+    visible = entry.isIntersecting;
+    if (visible) { readAlbums(); start(); }
+    // Al salir por completo de la sección, los paneles vuelven a su estado inicial
+    // para que la animación se repita al entrar de nuevo
+    else panels.forEach(p => p.classList.remove('is-active'));
+  }).observe(albums);
+
+  readAlbums();
+  addEventListener('scroll', readAlbums, { passive: true });
+  addEventListener('resize', () => { readAlbums(); start(); });
+  start();
+</script>

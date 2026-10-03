@@ -1,0 +1,68 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Nav from '../../components/Nav.astro';
+import Hero from '../../components/Hero.astro';
+import Footer from '../../components/Footer.astro';
+import { albums } from '../../data/site';
+
+export function getStaticPaths() {
+  return albums.map((album, i) => ({
+    params: { slug: album.slug },
+    props: { album, next: albums[(i + 1) % albums.length] },
+  }));
+}
+
+const { album, next } = Astro.props;
+---
+
+<Layout
+  title={`${album.label} · Miguel & Nancy`}
+  description={`${album.label}, ${album.place}. ${album.intro}`}
+>
+  <Nav />
+  <main>
+    <Hero
+      heading={`${album.label}, ${album.place}`}
+      image={album.gallery[0]}
+      alt={album.label}
+      phrase={album.intro}
+      word={album.label}
+      link={{ label: 'Ver galería', href: '#galeria' }}
+    />
+
+    <!-- ===== GALERÍA ===== -->
+    <section class="section album-gallery" id="galeria" aria-labelledby="galeria-title">
+      <div class="album-gallery__head">
+        <h2 id="galeria-title" class="h-display">{album.title.map(line => <span>{line}</span>)}</h2>
+        <p class="small">{album.place} · {album.gallery.length} fotografías</p>
+      </div>
+      <div class="album-gallery__grid">
+        {album.gallery.map((src, i) => (
+          <div class="ph album-gallery__photo">
+            <img src={src} alt={`${album.label}, fotografía ${i + 1}`} loading={i < 2 ? 'eager' : 'lazy'} onerror="this.remove()" />
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ===== SIGUIENTE HISTORIA ===== -->
+    <section class="section album-next" aria-label="Siguiente álbum">
+      <p class="small">Siguiente historia</p>
+      <a class="album-next__link" href={`/albumes/${next.slug}`}>{next.label}</a>
+      <div class="album-next__actions">
+        <a class="btn" href="/#contacto">Reservar nuestra fecha</a>
+        <a class="link small" href="/#albumes">Todos los álbumes</a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  /* Las fotos de la galería se revelan al entrar en pantalla, como en los álbumes del inicio */
+  const photos = document.querySelectorAll('.album-gallery__photo');
+  const io = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (entry.isIntersecting) { entry.target.classList.add('is-in'); io.unobserve(entry.target); }
+  }), { rootMargin: '0px 0px -10% 0px' });
+  photos.forEach(photo => io.observe(photo));
+</script>

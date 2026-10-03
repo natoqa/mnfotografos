@@ -1,0 +1,42 @@
+---
+import { about } from '../data/site';
+const last = about.phrases.length - 1;
+---
+
+<!-- ===== NOSOTROS ===== -->
+<section class="about" id="nosotros" aria-label="Nosotros" data-nav-keep style={`--n:${about.phrases.length}`}>
+  <div class="about__pin">
+    <div class="ph about__photo"><img src={about.image} alt={about.alt} loading="lazy" onerror="this.remove()" /></div>
+    <div class="about__text">
+      <div class="about__phrases">
+        {about.phrases.map((phrase, i) => (
+          <p class="about__lead">{phrase}{i === last && <span class="about__sign">{about.sign}</span>}</p>
+        ))}
+      </div>
+      <div class="about__progress" aria-hidden="true">{about.phrases.map(() => <i></i>)}</div>
+    </div>
+  </div>
+</section>
+
+<script>
+  /* Nosotros: las frases se relevan con el scroll a lo largo de la foto */
+  const about = document.getElementById('nosotros')!;
+  const leads = [...about.querySelectorAll('.about__lead')];
+  const ticks = [...about.querySelectorAll('.about__progress i')];
+  const updateLeads = () => {
+    const r = about.getBoundingClientRect();
+    let active = -1;
+    if (r.top < innerHeight * 0.35) {
+      const p = Math.min(1, Math.max(0, -r.top / (about.offsetHeight - innerHeight)));
+      active = Math.min(leads.length - 1, Math.floor(p * leads.length));
+    }
+    leads.forEach((el, i) => {
+      el.classList.toggle('is-in', i === active);
+      el.classList.toggle('is-out', active !== -1 && i !== active);
+    });
+    ticks.forEach((t, i) => t.classList.toggle('is-on', i <= active));
+  };
+  addEventListener('scroll', updateLeads, { passive: true });
+  addEventListener('resize', updateLeads);
+  updateLeads();
+</script>

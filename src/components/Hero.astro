@@ -1,0 +1,45 @@
+---
+import { hero } from '../data/site';
+
+interface Props {
+  heading?: string;
+  image?: string;
+  alt?: string;
+  phrase?: string;
+  word?: string;
+  link?: { label: string; href: string };
+}
+
+const {
+  heading = 'Miguel & Nancy · Fotógrafos de bodas y pre bodas en Perú',
+  image = hero.image,
+  alt = hero.alt,
+  phrase = hero.phrase,
+  word = hero.word,
+  link = { label: 'Ver álbumes', href: '#albumes' },
+} = Astro.props;
+---
+
+<!-- ===== HERO: foto a pantalla completa ===== -->
+<section class="hero" id="inicio" data-hero>
+  <h1 class="sr-only">{heading}</h1>
+  <div class="ph"><img src={image} alt={alt} fetchpriority="high" onerror="this.remove()" /></div>
+  <div class="hero__inner">
+    <div class="hero__meta">
+      <p class="hero__phrase">{phrase}</p>
+      <a href={link.href}>{link.label}</a>
+    </div>
+    <div class="hero__word" aria-hidden="true"><span class="fit">{word}</span></div>
+  </div>
+</section>
+
+<script>
+  /* Palabras gigantes: se ajustan al ancho exacto de la pantalla */
+  const fit = () => document.querySelectorAll<HTMLElement>('.fit').forEach(el => {
+    el.style.fontSize = '100px';
+    const target = el.parentElement!.clientWidth * 0.98;
+    el.style.fontSize = (100 * target / el.scrollWidth) + 'px';
+  });
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(fit);
+  addEventListener('resize', fit);
+</script>

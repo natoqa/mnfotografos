@@ -1,0 +1,110 @@
+---
+import '@fontsource-variable/bodoni-moda/opsz.css';
+import '@fontsource-variable/bodoni-moda/opsz-italic.css';
+import '@fontsource/hanken-grotesk/300.css';
+import '@fontsource/hanken-grotesk/400.css';
+import '@fontsource/hanken-grotesk/500.css';
+import '@fontsource/nanum-brush-script/400.css';
+import '../styles/global.css';
+import bodoniLatin from '@fontsource-variable/bodoni-moda/files/bodoni-moda-latin-opsz-normal.woff2?url';
+import hankenLatin from '@fontsource/hanken-grotesk/files/hanken-grotesk-latin-300-normal.woff2?url';
+import { SITE_URL, SITE_NAME, WHATSAPP, hero, socials } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+}
+
+const {
+  title = 'Miguel & Nancy · Fotografía de bodas',
+  description = 'Miguel & Nancy, fotógrafos de bodas y pre bodas en Perú.',
+  image = hero.ogImage,
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE_URL).href;
+
+// Datos del negocio para Google (ficha de fotógrafo)
+const business = {
+  '@context': 'https://schema.org',
+  '@type': 'ProfessionalService',
+  name: SITE_NAME,
+  description: 'Fotógrafos de bodas y pre bodas en Perú.',
+  url: SITE_URL,
+  image: hero.ogImage,
+  telephone: `+${WHATSAPP}`,
+  areaServed: 'PE',
+  address: { '@type': 'PostalAddress', addressCountry: 'PE' },
+  sameAs: socials.map(s => s.href).filter(href => !href.includes('wa.me')),
+};
+
+// Medición (opcional): define PUBLIC_PLAUSIBLE_DOMAIN o PUBLIC_GA_ID en un archivo .env
+const plausibleDomain = import.meta.env.PUBLIC_PLAUSIBLE_DOMAIN;
+const gaId = import.meta.env.PUBLIC_GA_ID;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <script is:inline>document.documentElement.classList.add('js')</script>
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#1E1B1B" />
+
+    <!-- Vista previa al compartir (WhatsApp, Facebook, Instagram, X) -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_PE" />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={image} />
+
+    <link rel="preload" href={bodoniLatin} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={hankenLatin} as="font" type="font/woff2" crossorigin />
+
+    <script type="application/ld+json" is:inline set:html={JSON.stringify(business)} />
+
+    {plausibleDomain && <script is:inline defer data-domain={plausibleDomain} src="https://plausible.io/js/script.js"></script>}
+    {gaId && (
+      <>
+        <script is:inline async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`}></script>
+        <script is:inline define:vars={{ gaId }}>
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('config', gaId);
+        </script>
+      </>
+    )}
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<script>
+  import { track } from '../scripts/track';
+
+  /* Mide los clics que llevan a WhatsApp o a redes sociales */
+  document.addEventListener('click', e => {
+    const a = (e.target as Element).closest?.('a[href]') as HTMLAnchorElement | null;
+    if (!a) return;
+    const where = a.closest('section, header, nav, footer')?.id || 'otro';
+    if (a.hostname.includes('wa.me')) track('whatsapp_click', { seccion: where });
+    else if (/instagram|facebook|tiktok/.test(a.hostname)) track('social_click', { red: a.hostname.replace('www.', ''), seccion: where });
+  });
+</script>

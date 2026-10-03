@@ -1,0 +1,51 @@
+---
+import { contactImage, INSTAGRAM, WHATSAPP } from '../data/site';
+---
+
+<!-- ===== CONTACTO ===== -->
+<section class="section grid contact" id="contacto">
+  <figure class="card">
+    <div class="ph">
+      <img src={contactImage} alt="" loading="lazy" onerror="this.remove()" />
+      <p class="card__script">gracias por permitirnos contar tu historia</p>
+    </div>
+    <figcaption class="card__foot">Miguel &amp; Nancy</figcaption>
+  </figure>
+
+  <form class="contact__form" id="waForm" data-wa={WHATSAPP} novalidate>
+    <h2 class="h-display">Reserva tu fecha</h2>
+    <p>Cuéntanos cuándo y dónde es tu boda. Te respondemos por WhatsApp con la disponibilidad y el portafolio 2026.</p>
+    <label class="field"><span>Nombres de la pareja</span><input name="nombres" autocomplete="name" required aria-describedby="nombres-error" /><span class="field__error" id="nombres-error" role="alert" hidden>Escribe sus nombres para continuar.</span></label>
+    <div class="fields-2">
+      <label class="field"><span>Fecha de la boda</span><input name="fecha" type="date" /></label>
+      <label class="field"><span>Ciudad o lugar</span><input name="lugar" /></label>
+    </div>
+    <button class="btn" type="submit">Enviar por WhatsApp</button>
+    <p class="contact__alt">También en Instagram: <a class="link" href={INSTAGRAM} target="_blank" rel="noopener">@mnfotografos</a></p>
+  </form>
+</section>
+
+<script>
+  import { track } from '../scripts/track';
+
+  /* Formulario → mensaje prellenado de WhatsApp */
+  const form = document.getElementById('waForm') as HTMLFormElement;
+  const input = form.elements.namedItem('nombres') as HTMLInputElement;
+  const error = document.getElementById('nombres-error')!;
+  input.addEventListener('input', () => { error.hidden = true; input.removeAttribute('aria-invalid'); });
+  form.addEventListener('submit', e => {
+    e.preventDefault();
+    const f = new FormData(form);
+    const nombres = String(f.get('nombres') || '').trim();
+    if (!nombres) { error.hidden = false; input.setAttribute('aria-invalid', 'true'); input.focus(); return; }
+    let fecha = String(f.get('fecha') || '');
+    if (fecha) fecha = new Date(fecha + 'T12:00').toLocaleDateString('es-PE', { day: 'numeric', month: 'long', year: 'numeric' });
+    const lugar = String(f.get('lugar') || '');
+    const msg = `Hola Miguel y Nancy, somos ${nombres}.` +
+      (fecha ? ` Nuestra boda es el ${fecha}` : ' Estamos planeando nuestra boda') +
+      (lugar ? ` en ${lugar.trim()}.` : '.') +
+      ' Nos gustaría conocer su disponibilidad y el portafolio 2026.';
+    track('form_submit', { fecha: fecha ? 'si' : 'no', lugar: lugar ? 'si' : 'no' });
+    window.open(`https://wa.me/${form.dataset.wa}?text=${encodeURIComponent(msg)}`, '_blank', 'noopener');
+  });
+</script>

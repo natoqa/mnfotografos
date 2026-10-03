@@ -1,0 +1,96 @@
+---
+import { menuLinks, INSTAGRAM, waLink, socials } from '../data/site';
+const tiktok = socials.find(s => s.name === 'TikTok')!.href;
+---
+
+<!-- ===== NAV: redes a la izquierda + logo centrado + hamburguesa a la derecha ===== -->
+<header class="nav" id="nav">
+  <div class="nav__social">
+    <a href={INSTAGRAM} target="_blank" rel="noopener" aria-label="Instagram de Miguel y Nancy">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5" /><circle cx="12" cy="12" r="4.2" /><circle class="dot" cx="17.4" cy="6.6" r=".6" /></svg>
+    </a>
+    <a href={tiktok} target="_blank" rel="noopener" aria-label="TikTok de Miguel y Nancy">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14.6 3v12.4a4.6 4.6 0 1 1-4.6-4.6M14.6 3c.5 3 2.6 5.1 5.6 5.4" /></svg>
+    </a>
+  </div>
+  <!-- Reemplaza el texto por el SVG del logo cuando lo tengas -->
+  <a href="/#inicio" class="logo" aria-label="Miguel y Nancy, inicio">Miguel<em>&amp;</em>Nancy</a>
+  <button class="burger" id="burger" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">
+    <span></span><span></span>
+  </button>
+</header>
+
+<nav class="menu" id="menu" aria-label="Menú principal">
+  <ul class="menu__list">
+    {menuLinks.map((link, i) => (
+      <li><a href={link.href} data-preview={i} style={`--i:${i}`}>{link.label}</a></li>
+    ))}
+  </ul>
+  <div class="menu__preview" aria-hidden="true">
+    {menuLinks.map((link, i) => (
+      <div class:list={['ph', { 'is-active': i === 0 }]}><img src={link.preview} alt="" loading="lazy" onerror="this.remove()" /></div>
+    ))}
+  </div>
+  <div class="menu__foot">
+    <a href={INSTAGRAM} target="_blank" rel="noopener">Instagram @mnfotografos</a>
+    <a href={waLink()} target="_blank" rel="noopener">WhatsApp</a>
+    <span>Portafolio 2026</span>
+  </div>
+</nav>
+
+<script>
+  const nav = document.getElementById('nav')!;
+  const burger = document.getElementById('burger')!;
+  const menu = document.getElementById('menu')!;
+  const hero = document.querySelector<HTMLElement>('[data-hero]');
+  const behindMenu = document.querySelectorAll<HTMLElement>('main, footer');
+
+  /* Nav: transparente sobre el hero, sólido después; se oculta al bajar y aparece al subir.
+     Solo cambia tras recorrer HIDE_AFTER px seguidos en una dirección, para que no parpadee
+     con el scroll suavizado de la rueda o el trackpad. */
+  const HIDE_AFTER = 12;
+  const keepVisible = document.querySelectorAll<HTMLElement>('[data-nav-keep]');
+  let lastY = scrollY, travel = 0;
+  const onScroll = () => {
+    const y = scrollY;
+    const dy = y - lastY;
+    lastY = y;
+    const pastHero = y > (hero ? hero.offsetHeight : 0) - 80;
+    nav.classList.toggle('is-solid', pastHero);
+
+    // Dentro de Nosotros y Álbumes el nav no se esconde: las secciones empiezan debajo de él
+    const inPinned = [...keepVisible].some(el => {
+      const r = el.getBoundingClientRect();
+      return r.top <= nav.offsetHeight && r.bottom > nav.offsetHeight;
+    });
+    if (!pastHero || inPinned) { nav.classList.remove('is-hidden'); travel = 0; return; }
+
+    travel = Math.sign(dy) === Math.sign(travel) ? travel + dy : dy;
+    if (travel > HIDE_AFTER) nav.classList.add('is-hidden');
+    else if (travel < -HIDE_AFTER) nav.classList.remove('is-hidden');
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* Menú */
+  const setMenu = (open: boolean) => {
+    menu.classList.toggle('is-open', open);
+    nav.classList.toggle('menu-open', open);
+    burger.setAttribute('aria-expanded', String(open));
+    burger.setAttribute('aria-label', open ? 'Cerrar menú' : 'Abrir menú');
+    document.body.classList.toggle('no-scroll', open);
+    behindMenu.forEach(el => { el.inert = open; }); // el teclado no se sale del menú
+    if (open) setTimeout(() => menu.querySelector('a')!.focus({ preventScroll: true }), 400);
+  };
+  burger.addEventListener('click', () => setMenu(!menu.classList.contains('is-open')));
+  menu.querySelectorAll('.menu__list a').forEach(a => a.addEventListener('click', () => setMenu(false)));
+  addEventListener('keydown', e => { if (e.key === 'Escape' && menu.classList.contains('is-open')) { setMenu(false); burger.focus(); } });
+
+  /* Vista previa de foto al pasar por cada enlace del menú */
+  const previews = menu.querySelectorAll('.menu__preview .ph');
+  menu.querySelectorAll<HTMLElement>('[data-preview]').forEach(a => {
+    const show = () => previews.forEach((p, i) => p.classList.toggle('is-active', i === +a.dataset.preview!));
+    a.addEventListener('mouseenter', show);
+    a.addEventListener('focus', show);
+  });
+</script>

@@ -1,0 +1,17 @@
+---
+import { steps } from '../data/site';
+---
+
+<!-- ===== PROCESO (es una secuencia real, por eso va numerado) ===== -->
+<section class="section grid process" id="proceso">
+  <div class="process__intro">
+    <h2 class="h-display">Cómo trabajamos</h2>
+    <p>Cada cobertura empieza con una conversación. Los paquetes y precios completos están en nuestro portafolio 2026.</p>
+    <a class="btn" href="#contacto">Pedir el portafolio 2026</a>
+  </div>
+  <ol class="steps">
+    {steps.map(step => (
+      <li><div><h3>{step.title}</h3><p>{step.text}</p></div></li>
+    ))}
+  </ol>
+</section>

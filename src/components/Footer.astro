@@ -1,0 +1,13 @@
+---
+import { INSTAGRAM } from '../data/site';
+---
+
+<footer class="footer">
+  <span class="logo">Miguel<em>&amp;</em>Nancy</span>
+  <span>© <span id="year">{new Date().getFullYear()}</span> Miguel &amp; Nancy Fotógrafos</span>
+  <a href={INSTAGRAM} target="_blank" rel="noopener">@mnfotografos</a>
+</footer>
+
+<script>
+  document.getElementById('year')!.textContent = String(new Date().getFullYear());
+</script>

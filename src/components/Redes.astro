@@ -1,0 +1,16 @@
+---
+import { socials } from '../data/site';
+---
+
+<!-- ===== REDES ===== -->
+<section class="section" id="redes">
+  <div class="redes__head">
+    <h2 class="h-display">Redes</h2>
+    <p class="small">Publicamos bodas completas, pre bodas y lo que pasa detrás de cámara.</p>
+  </div>
+  <ul class="redes__list">
+    {socials.map(s => (
+      <li><a href={s.href} target="_blank" rel="noopener"><b>{s.name}</b><span class="small">{s.handle}</span></a></li>
+    ))}
+  </ul>
+</section>

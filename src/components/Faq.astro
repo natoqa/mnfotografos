@@ -1,0 +1,44 @@
+---
+import { faqs } from '../data/site';
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a },
+  })),
+};
+---
+
+<!-- ===== PREGUNTAS FRECUENTES ===== -->
+<section class="section grid faq" id="preguntas">
+  <div class="faq__head">
+    <h2 class="h-display">Preguntas frecuentes</h2>
+    <p>¿No encuentras tu duda? <a class="link" href="#contacto">Escríbenos</a></p>
+  </div>
+  <div class="faq__list">
+    {faqs.map(({ q, a }, i) => (
+      <div class="faq__item">
+        <h3><button class="faq__q" aria-expanded="false" aria-controls={`faq-${i + 1}`} id={`faq-q-${i + 1}`}>{q}<i aria-hidden="true"></i></button></h3>
+        <div class="faq__a" id={`faq-${i + 1}`} role="region" aria-labelledby={`faq-q-${i + 1}`}><div><p>{a}</p></div></div>
+      </div>
+    ))}
+  </div>
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(schema)} />
+</section>
+
+<script>
+  /* Preguntas frecuentes: una abierta a la vez */
+  const faqItems = document.querySelectorAll('.faq__item');
+  faqItems.forEach(item => {
+    const btn = item.querySelector('.faq__q')!;
+    btn.addEventListener('click', () => {
+      const open = !item.classList.contains('is-open');
+      faqItems.forEach(o => { o.classList.remove('is-open'); o.querySelector('.faq__q')!.setAttribute('aria-expanded', 'false'); });
+      item.classList.toggle('is-open', open);
+      btn.setAttribute('aria-expanded', String(open));
+    });
+  });
+</script>

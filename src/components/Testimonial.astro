@@ -1,0 +1,37 @@
+---
+import { testimonials } from '../data/site';
+const rotating = testimonials.length > 1;
+---
+
+<!-- ===== TESTIMONIOS ===== -->
+<section class:list={['section grid quote', { 'quote--rotating': rotating }]} id="testimonios" aria-label="Testimonios">
+  {testimonials.map((t, i) => (
+    <>
+      <blockquote class:list={{ 'is-active': i === 0 }} data-slide={i}>{t.quote}</blockquote>
+      <cite class:list={{ 'is-active': i === 0 }} data-slide={i}>{t.author}</cite>
+    </>
+  ))}
+</section>
+
+<script>
+  /* Alterna los testimonios cada 7 s; se detiene al pasar el cursor o con movimiento reducido */
+  const section = document.getElementById('testimonios')!;
+  if (section.classList.contains('quote--rotating')) {
+    const total = section.querySelectorAll('blockquote').length;
+    let index = 0, paused = false;
+    const show = (n: number) => {
+      index = n % total;
+      section.querySelectorAll<HTMLElement>('[data-slide]').forEach(el => {
+        const on = +el.dataset.slide! === index;
+        el.classList.toggle('is-active', on);
+        el.setAttribute('aria-hidden', String(!on));
+      });
+    };
+    show(0);
+    section.addEventListener('mouseenter', () => { paused = true; });
+    section.addEventListener('mouseleave', () => { paused = false; });
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setInterval(() => { if (!paused && !document.hidden) show(index + 1); }, 7000);
+    }
+  }
+</script>
