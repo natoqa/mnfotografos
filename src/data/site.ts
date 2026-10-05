@@ -84,6 +84,18 @@ export const albums = [
   },
 ];
 
+// Fotos que aparecen y se desvanecen en el fondo negro de "Álbumes" (provisionales; versión chica para que cargue rápido)
+export const albumsBackdrop = [
+  '1519741497674-611481863552',
+  '1537633552985-df8429e8048b',
+  '1511285560929-80b456fea0bc',
+  '1465495976277-4387d4b0b4c6',
+  '1522673607200-164d1b6ce486',
+  '1606800052052-a08af7148866',
+  '1583939003579-730e3918a45a',
+  '1591604466107-ec97de577aff',
+].map(id => unsplash(id, 'w=600'));
+
 export const steps = [
   { title: 'Conversamos', text: 'Nos cuentan cómo imaginan el día: lugar, horarios y las personas que no pueden faltar en las fotos.' },
   { title: 'Reservamos la fecha', text: 'Elegimos el paquete juntos y separamos la fecha con un adelanto.' },
@@ -92,22 +104,62 @@ export const steps = [
   { title: 'Entrega', text: 'Galería privada en línea y las piezas impresas que hayan elegido.' },
 ];
 
+// Galería de Studio/Workshop: se arma como collage en bloques de 4, 6 y 4 fotos (el recorte lo hace el diseño)
+const collageGallery = (ids: string[]) => ids.map(id => unsplash(id, 'w=1000'));
+
+// Cada línea tiene su propia página en /<id> (/studio y /workshop). Textos provisionales: reemplazar por los del cliente.
 export const branches = [
   {
     id: 'studio',
     name: 'Studio',
     image: unsplash('1554048612-b6a482bc67e5', 'w=1600'),
     text: 'Sesiones en estudio: retratos, familia, maternidad y marca personal, con la misma mirada que llevamos a cada boda.',
+    more: 'Conocer MN Studio',
     cta: 'Reservar una sesión',
     wa: 'Hola Miguel y Nancy, quiero información sobre una sesión en MN Studio.',
+    phrase: 'Un espacio para detenerse frente a la cámara, sin prisa y con luz pensada para ti.',
+    intro: 'MN Studio es nuestro espacio de retrato. Trabajamos con luz natural y de estudio, con tiempo para conversar antes de empezar y dirigir cada pose con calma. El resultado son fotos que se sienten tuyas, no de catálogo.',
+    listTitle: 'Tipos de sesión',
+    items: [
+      { title: 'Retrato', text: 'Retratos individuales o en pareja, con fondo neutro o con elementos que hablen de ti.' },
+      { title: 'Familia', text: 'Sesiones con niños, abuelos y mascotas, a su ritmo y sin poses forzadas.' },
+      { title: 'Maternidad y recién nacidos', text: 'La espera y los primeros días, en un ambiente cálido y seguro.' },
+      { title: 'Marca personal', text: 'Fotos para tu web, redes y prensa, alineadas con la imagen de tu negocio.' },
+    ],
+    // ← fotos provisionales: reemplazar por las del estudio (agrega o quita las que quieras)
+    gallery: collageGallery([
+      '1554048612-b6a482bc67e5', '1537633552985-df8429e8048b', '1522673607200-164d1b6ce486', '1511285560929-80b456fea0bc',
+      '1606800052052-a08af7148866', '1465495976277-4387d4b0b4c6', '1591604466107-ec97de577aff', '1519741497674-611481863552',
+      '1583939003579-730e3918a45a', '1452587925148-ce544e77e70d', '1537633552985-df8429e8048b', '1554048612-b6a482bc67e5',
+      '1511285560929-80b456fea0bc', '1522673607200-164d1b6ce486', '1465495976277-4387d4b0b4c6', '1606800052052-a08af7148866',
+      '1591604466107-ec97de577aff', '1519741497674-611481863552',
+    ]),
   },
   {
     id: 'workshop',
     name: 'Workshop',
     image: unsplash('1452587925148-ce544e77e70d', 'w=1600'),
     text: 'Talleres para fotógrafos que quieren aprender a contar historias: dirección de parejas, luz natural y edición.',
+    more: 'Conocer MN Workshop',
     cta: 'Ver próximos talleres',
     wa: 'Hola Miguel y Nancy, quiero información sobre el próximo MN Workshop.',
+    phrase: 'Lo que aprendimos en cada boda, contado de fotógrafo a fotógrafo.',
+    intro: 'MN Workshop son talleres prácticos en grupos pequeños. Compartimos cómo trabajamos de principio a fin: cómo dirigimos a las parejas, cómo leemos la luz y cómo editamos para que una galería cuente una historia completa.',
+    listTitle: 'Qué vas a aprender',
+    items: [
+      { title: 'Dirección de parejas', text: 'Cómo guiar sin posar, para lograr fotos naturales incluso con parejas tímidas.' },
+      { title: 'Luz natural', text: 'Leer y aprovechar la luz disponible en interiores, exteriores y a cualquier hora.' },
+      { title: 'Práctica en sesión real', text: 'Fotografiamos juntos una sesión con modelos y revisamos el material en grupo.' },
+      { title: 'Edición y entrega', text: 'Nuestro flujo de selección, edición y entrega de la galería final.' },
+    ],
+    // ← fotos provisionales: reemplazar por las de los talleres (agrega o quita las que quieras)
+    gallery: collageGallery([
+      '1452587925148-ce544e77e70d', '1519741497674-611481863552', '1465495976277-4387d4b0b4c6', '1583939003579-730e3918a45a',
+      '1591604466107-ec97de577aff', '1606800052052-a08af7148866', '1554048612-b6a482bc67e5', '1511285560929-80b456fea0bc',
+      '1537633552985-df8429e8048b', '1522673607200-164d1b6ce486', '1583939003579-730e3918a45a', '1452587925148-ce544e77e70d',
+      '1465495976277-4387d4b0b4c6', '1519741497674-611481863552', '1591604466107-ec97de577aff', '1606800052052-a08af7148866',
+      '1554048612-b6a482bc67e5', '1537633552985-df8429e8048b',
+    ]),
   },
 ];
 

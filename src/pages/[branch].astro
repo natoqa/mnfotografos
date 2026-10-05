@@ -1,0 +1,102 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Nav from '../components/Nav.astro';
+import Hero from '../components/Hero.astro';
+import Footer from '../components/Footer.astro';
+import { branches, waLink } from '../data/site';
+
+// Genera /studio y /workshop a partir de `branches` en site.ts
+export function getStaticPaths() {
+  return branches.map((branch, i) => ({
+    params: { branch: branch.id },
+    props: { branch, other: branches[(i + 1) % branches.length] },
+  }));
+}
+
+const { branch, other } = Astro.props;
+const title = `MN ${branch.name}`;
+
+// Collage: las fotos se reparten en bloques que se van alternando.
+// a = vertical + 2 horizontales apiladas + una grande · c = verticales a los lados y 4 chicas al medio · b = espejo de a
+const LAYOUTS = [
+  { name: 'a', areas: ['v', 'h1', 'h2', 'b'] },
+  { name: 'c', areas: ['v1', 'h1', 'h2', 'v2', 'h3', 'h4'] },
+  { name: 'b', areas: ['v', 'h1', 'h2', 'b'] },
+];
+const blocks: { name: string; photos: { src: string; area?: string }[] }[] = [];
+for (let i = 0, k = 0; i < branch.gallery.length; k++) {
+  const layout = LAYOUTS[k % LAYOUTS.length];
+  const chunk = branch.gallery.slice(i, i + layout.areas.length);
+  // Si sobran menos fotos de las que pide el bloque, van en una fila simple al final
+  blocks.push(chunk.length === layout.areas.length
+    ? { name: layout.name, photos: chunk.map((src, j) => ({ src, area: layout.areas[j] })) }
+    : { name: 'rest', photos: chunk.map(src => ({ src })) });
+  i += chunk.length;
+}
+---
+
+<Layout title={`${title} · Miguel & Nancy`} description={`${title}. ${branch.text}`}>
+  <Nav />
+  <main>
+    <Hero
+      heading={`${title} · Miguel & Nancy`}
+      image={branch.image}
+      alt={title}
+      phrase={branch.phrase}
+      word={branch.name}
+      link={{ label: 'Conocer más', href: '#info' }}
+    />
+
+    <!-- ===== QUÉ ES + QUÉ INCLUYE ===== -->
+    <section class="section grid process" id="info">
+      <div class="process__intro">
+        <h2 class="h-display">{title}</h2>
+        <p>{branch.intro}</p>
+        <a class="btn" href={waLink(branch.wa)} target="_blank" rel="noopener">{branch.cta}</a>
+      </div>
+      <div class="steps steps--plain">
+        <p class="small">{branch.listTitle}</p>
+        <ul>
+          {branch.items.map(item => (
+            <li><div><h3>{item.title}</h3><p>{item.text}</p></div></li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- ===== GALERÍA ===== -->
+    <section class="section album-gallery" aria-label={`Fotos de ${title}`}>
+      <div class="collage">
+        {blocks.map(block => (
+          <div class={`collage__block collage__block--${block.name}`} style={`--n:${block.photos.length}`}>
+            {block.photos.map(photo => (
+              <div class="ph album-gallery__photo" style={photo.area && `grid-area:${photo.area}`}>
+                <img src={photo.src} alt={`${title}, fotografía`} loading="lazy" onerror="this.remove()" />
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </section>
+
+    <!-- ===== CIERRE ===== -->
+    <section class="section album-next" aria-label="Siguiente">
+      <p class="small">También hacemos</p>
+      <a class="album-next__link" href={`/${other.id}`}>MN {other.name}</a>
+      <div class="album-next__actions">
+        <a class="btn" href={waLink(branch.wa)} target="_blank" rel="noopener">{branch.cta}</a>
+        <a class="small" href="/">Volver al inicio</a>
+      </div>
+    </section>
+  </main>
+  <Footer />
+</Layout>
+
+<script>
+  /* Las fotos se revelan al entrar en pantalla, igual que en las páginas de álbum */
+  const photos = document.querySelectorAll('.album-gallery__photo');
+  const io = new IntersectionObserver(entries => entries.forEach(entry => {
+    if (entry.isIntersecting) { entry.target.classList.add('is-in'); io.unobserve(entry.target); }
+  }), { rootMargin: '0px 0px -10% 0px' });
+  photos.forEach(photo => io.observe(photo));
+</script>

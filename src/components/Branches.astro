@@ -1,17 +1,17 @@
 ---
-import { branches, waLink } from '../data/site';
+import { branches } from '../data/site';
 ---
 
-<!-- ===== MN STUDIO + MN WORKSHOP ===== -->
+<!-- ===== MN STUDIO + MN WORKSHOP: cada mitad lleva a su página ===== -->
 <section class="branches" id="studio-workshop" aria-label="MN Studio y MN Workshop">
   {branches.map(branch => (
-    <article class="branch" id={branch.id}>
+    <a class="branch" id={branch.id} href={`/${branch.id}`}>
       <div class="ph branch__bg"><img src={branch.image} alt="" loading="lazy" onerror="this.remove()" /></div>
       <div class="branch__body">
         <h2 class="branch__name"><span>MN</span>{branch.name}</h2>
         <p class="branch__text">{branch.text}</p>
-        <a class="branch__cta link" href={waLink(branch.wa)} target="_blank" rel="noopener">{branch.cta}</a>
+        <span class="branch__cta">{branch.more}</span>
       </div>
-    </article>
+    </a>
   ))}
 </section>
